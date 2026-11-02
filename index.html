@@ -64,6 +64,8 @@ body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);min-hei
 .leak .media{background:#0b0a0c;aspect-ratio:16/9;display:grid;place-items:center;position:relative}
 .leak video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
 .leak .cover{width:100%;height:100%;object-fit:cover;display:block}
+.leak .media.tall{aspect-ratio:3/4;overflow:hidden}
+.leak .pic{position:absolute;inset:0;display:block}
 .leak .disc{width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--surface) 0 9%,var(--accent) 10% 13%,#1b151a 14% 100%);box-shadow:0 0 0 6px rgba(255,255,255,.06)}
 .leak .badge{position:absolute;top:10px;left:10px;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.1em;background:var(--accent);color:var(--accent-ink);padding:4px 8px;border-radius:var(--radius)}
 .leak .badge.side{left:auto;right:10px;background:var(--surface);color:var(--ink)}
@@ -117,11 +119,12 @@ footer a{color:inherit}
 /* =====================================================================
    LEAKS — add a new one here, newest first.
    type:  "snippet" (a song clip: an .mp3 in media/snippets/)
-          "teaser"  (a video: an .mp4 in media/teasers/)
+          "teaser"  (a video: an .mp4 in media/teasers/, or a picture: image instead of file)
    side:  "pretty", "killer" or "both"
    cover: optional picture for a snippet (shows above the player)
    ===================================================================== */
 const LEAKS = [
+  { type:"teaser", side:"pretty", title:"Anne", note:"Coming soon…", image:"media/teasers/anne-coming-soon.png", date:"2026-11-01" },
   // { type:"snippet", side:"pretty", title:"Anne", note:"15 seconds of the chorus", file:"media/snippets/anne.mp3", cover:"media/snippets/anne.png", date:"2026-11-01" },
   // { type:"teaser",  side:"killer", title:"Killer teaser", note:"Something's coming", file:"media/teasers/killer-teaser.mp4", date:"2026-11-01" },
 ];
@@ -147,11 +150,13 @@ function setSide(next){
 function card(l){
   const when = l.date ? new Date(l.date + "T12:00:00").toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" }) : "";
   const sideTag = l.side === "both" ? "Pretty + Killer" : l.side === "killer" ? "Killer" : "Pretty";
-  const media = l.type === "teaser"
+  const media = l.image
+    ? `<a class="pic" href="${esc(l.image)}" target="_blank" rel="noopener" aria-label="Open the full picture"><img class="cover" src="${esc(l.image)}" alt="${esc(l.title)} teaser" loading="lazy"></a>`
+    : l.type === "teaser"
     ? `<video src="${esc(l.file)}" controls playsinline preload="metadata"></video>`
     : l.cover ? `<img class="cover" src="${esc(l.cover)}" alt="" loading="lazy">` : `<div class="disc" aria-hidden="true"></div>`;
   return `<article class="leak">
-    <div class="media">${media}<span class="badge">${l.type === "teaser" ? "Teaser" : "Snippet"}</span><span class="badge side">${sideTag}</span></div>
+    <div class="media${l.image ? " tall" : ""}">${media}<span class="badge">${l.type === "teaser" ? "Teaser" : "Snippet"}</span><span class="badge side">${sideTag}</span></div>
     <div class="body">
       <h3>${esc(l.title)}</h3>
       ${l.note || when ? `<p>${esc(l.note)}${l.note && when ? " · " : ""}${esc(when)}</p>` : ""}
