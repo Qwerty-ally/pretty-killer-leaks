@@ -59,7 +59,7 @@ body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);min-hei
 .tab[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tab .n{opacity:.6;margin-left:4px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding-bottom:64px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding-bottom:64px;align-items:start}
 .leak{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
 .leak .media{background:#0b0a0c;aspect-ratio:16/9;display:grid;place-items:center;position:relative}
 .leak video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
@@ -121,8 +121,10 @@ footer a{color:inherit}
           "teaser"  (a video: an .mp4 in media/teasers/, or a picture: image instead of file)
    side:  "pretty", "killer" or "both"
    cover: optional picture for a snippet (shows above the player)
+   poster: optional picture shown on a video teaser before it plays
    ===================================================================== */
 const LEAKS = [
+  { type:"teaser", side:"killer", title:"Lucky", note:"Coming soon…", file:"media/teasers/lucky-coming-soon.mp4", poster:"media/teasers/lucky-coming-soon.jpg", date:"2026-11-02" },
   { type:"teaser", side:"pretty", title:"Anne", note:"Coming soon…", image:"media/teasers/anne-coming-soon.png", date:"2026-11-01" },
   // { type:"snippet", side:"pretty", title:"Anne", note:"15 seconds of the chorus", file:"media/snippets/anne.mp3", cover:"media/snippets/anne.png", date:"2026-11-01" },
   // { type:"teaser",  side:"killer", title:"Killer teaser", note:"Something's coming", file:"media/teasers/killer-teaser.mp4", date:"2026-11-01" },
@@ -152,7 +154,7 @@ function card(l){
   const media = l.image
     ? `<a class="pic" href="${esc(l.image)}" target="_blank" rel="noopener" aria-label="Open the full picture"><img class="cover" src="${esc(l.image)}" alt="${esc(l.title)} teaser" loading="lazy"></a>`
     : l.type === "teaser"
-    ? `<video src="${esc(l.file)}" controls playsinline preload="metadata"></video>`
+    ? `<video src="${esc(l.file)}" ${l.poster ? `poster="${esc(l.poster)}"` : ""} controls playsinline preload="metadata"></video>`
     : l.cover ? `<img class="cover" src="${esc(l.cover)}" alt="" loading="lazy">` : `<div class="disc" aria-hidden="true"></div>`;
   return `<article class="leak">
     <div class="media${l.image ? " tall" : ""}">${media}<span class="badge">${l.type === "teaser" ? "Teaser" : "Snippet"}</span><span class="badge side">${sideTag}</span></div>
